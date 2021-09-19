@@ -1,49 +1,59 @@
 from networkx import Graph
 
-
+# Καθε αρχείο περιέχει 2 στήλες η μια το ονομα του μαθήματος
+# και η δευτερη ειναι ο κωδικός καθε περιόδου
 def read_solution(path):
-    # Create an empty dictionary
+    # Δημιουργώ ενα λεξικό το οποίο στην αρχή είναι κενό
     solution = dict()
 
-    # open file with read rights
+    # oΑνοίγω το αρχείο μου με δηκαιώματα ανάγνωσης
     file = open(path, "r")
 
-    # split file into lines
+    # Σπάω το αρχείο μου σε γραμμές
     lines = file.readlines()
 
-    # For every line in lines
+    # Δημιουργώ μια for έτσι ώστε να περάσω όλες τις γραμμές
     for line in lines:
-        # Remove emptyspace
+        # Για κάθε γραμμή διαγράφω τα κενά που μπορούν να υπάρχουν δεξιά και αριστερά
         line = line.strip()
+        # Αν υπάρχει κάποια γραμμή κενή την προσπερνάω
         if line == "":
             continue
-        # split line
+        # Σπάω την γραμμή μου σε δύο κομμάτια
         line_contains = line.split()
-
+        # Χωρίζω και ονομάζω τις μεταβλητές μου σε exam και period αντίστοιχα και μετατρέπω τις μεταβλητές σε integer
         exam = int(line_contains[0])
         period = int(line_contains[1])
         solution[exam] = period
-
+    # Επιστρέφουμε την λύση μας
     return solution
 
 
+# Για να βαθμολογίσω την εκάστοτε λύση θα πρέπει να υπολογίσω πόσσες περιόδους χρησημοποιεί
+# Να ελέγξω αν η λύση που μας έχει δωθεί είναι σωστή δηλαδή να μηνυπάρχουν για ενα μαθητή 2 εξετάσεις την ίδια περίοδο.
 def evaluate(graph: Graph, solution):
+    # Δημιουργώ ένα κενό λεξικό για τις χρησημοποιούμενες περιόδους
     used_periods = dict()
-    # Check that all exams are present and on valid periods
+    # Τσεκάρω αν όλες οι εξετάσεις εχουν χρησημοποιειθεί σε κάποια περίοδο.
     for exam in graph:
+        # Αν δεν έχουμε βάλει κάποια εξέταση μέσα στην λύση
         if exam not in solution.keys():
-            print(f"exam: {exam} doesn't exist")
+            print(f"Η εξέταση: {exam} δεν υπάρχει")
             return 0, False
+        # Αν η περίοδος είναι κάτω του μηδενός είναι πάλι λάθος
         assigned_period = solution[exam]
         if assigned_period < 0:
-            print(f"exam: {exam} is assigned to a negative period")
+            print(f"Η εξέταση: {exam} ανατέθεικε σε αρνητική περίοδο")
             return 0, False
+        # Εφόσον δεν καλλύπτει κατι απο τα παραπάνω τότε η λύση είναι σωστή
         used_periods[assigned_period] = True
 
-    # Check that no hard constraint is violated and evaluate
+    # Για όλες τις εξετάσεις ελέγχουμε αν κάποια εξέταση έχει πέσει πάνω με κάποια άλλη του ίδιου μαθητή στην ιδια περίοδο
     for exam_a, exam_b in graph.edges():
         if solution[exam_a] == solution[exam_b]:
-            print(f"exam: {exam_a} and exam: {exam_b} are in the same period")
+            print(
+                f"Η εξέταση: {exam_a} και η εξέταση: {exam_b} είναι στην ίδια περίοδο"
+            )
             return 0, False
-
-    return len(used_periods), True 
+    # Μας επιστρέφει τον αριθμό των χρησημοποιημένων περιόδων
+    return len(used_periods), True
