@@ -4,65 +4,69 @@ from networkx.classes.function import density
 
 
 def read_problem(path):
-    # Create an empty Graph
+    # Δημιουργώ έναν κενό γράφο
     graph = Graph()
 
-    # initialize students
+    # Δημιουργώ δύο μεταωλητές
     students = 0
     enrollments = 0
-    # open file with read rights
+    # Ανοίγω ενα αρχείο με δηκαιώματα ανάγνωσης
     file = open(path, "r")
- 
-    # list = ["4","1	5","1	2	3",...]
-    # split file into lines
+
+    # Χωρίζει σε λίστες το αρχείο μου
     lines = file.readlines()
 
-    # For every line
+    # Δημιουργώ μια for για να παίρνει καθε φορά μια μια τις γραμμές μου
     for line in lines:
-        # Remove emptyspace
+        # Διαγράφω τα κενά που μπορούν να υπάρχουν μέσα σε κάθε γραμμή της λίστας μου
         line = line.strip()
 
-        # corner case where the line is empty
+        # Αν τυχόν υπάρχει κάποια γραμμή κενή θα πρέπει να την προσπεράσουμε
         if line == "":
             continue
-
+        # Κάθε γραμμή αφορά και έναν μαθητή οπότε αυτό μας ενδιαφέρει για να βρούμε το σύνολλο των σπουδαστών
         students += 1
 
-        # Split line
+        # Σε κάθε γραμμή ξεχωρίζω τις εξετάσεις του κάθε μαθητή για να βρώ το σύνολο των εγραφών
         exams = line.split()
-
+        # Και  προσθέτω καθε μια για να βρώ το μήκος της λίστας exams
         enrollments += len(exams)
 
-        # corner case were a student has only one exam
+        # Δημιουργώ μια συνθήκη και ελέγχω σε περίπτωση που το μήκος της λίστας μου ειναι ισο με 1 αυτομάτος
+        # αυτο σημαίνει πως η γραμμή αυτή είναι και κόμβος για εμένα.
         if len(exams) == 1:
+            # Εγώ θέλω την μεταβλητή μου σε integer επειδή ειναι Strings γραμμή
+            # Και για την λίστα exams θα πάρω την θέση 0 που είναι και η μοναδική θέση που έχω
             exam_int = int(exams[0])
+            # Δημιουργώ και τους υπόλοιπους κόμβους - κορυφές
             graph.add_node(exam_int)
-            # goto next line
+            # Πάω στην επόμενη γραμμή
             continue
 
-        # Create all possible combinations of exams
+        # φτιάχνω ολους τους πιθανούς συνδιασμούς που εχω απο το exams παιρνοντας τα 2 2
         # Για την [1,2,3]: [(1,2),(1,3),(2,3)]
         exam_combinations = combinations(exams, 2)
 
         for exam_a, exam_b in exam_combinations:
-            # Cast to integers
+            # Μετατρέπουμε τις μεταβλητές μας σε integer
             exam_a_int = int(exam_a)
             exam_b_int = int(exam_b)
 
-            # Add edge to the graph
+            # Φτιάχνουμε τις ακμές μας στο γράφο μας
             graph.add_edge(exam_a_int, exam_b_int)
 
-    # print density
+    # Βρήσκουμε την πυκνότητα
     density_of_graph = density(graph)
 
-    # round density to two decimal points
+    # Επειδή ομως αυτο μπορεί να έχει πολλα δεκαδικά ψηφία το θέμουμε εμείς μόνο με 2 δεκαδικά
+    # το κανουμε με την εντολή round
     density_rounded = round(density_of_graph, 2)
 
-    # report
-    print(f"Conflict density for {path} is {density_rounded}")
-    print(f"Number of students: {students}")
-    print(f"Number of enrollments: {enrollments}")
-    print(f"Number of exams: {graph.number_of_nodes()}")
+    # Τυπώνουμε τα αποτελέσματα μας
+    print(f"Η πυκνότητα των συγκρούσεων για το {path} είναι {density_rounded}")
+    print(f"Ο αριθμός των μαθητών είναι: {students}")
+    print(f"Ο αριθμός των εγγραφών: {enrollments}")
+    print(f"Ο αριθμός των εξετάσεων: {graph.number_of_nodes()}")
 
     return graph
 
@@ -87,4 +91,3 @@ if __name__ == "__main__":
     for path in paths:
         graph = read_problem(path)
         print()
-  
