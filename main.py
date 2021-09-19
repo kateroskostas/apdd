@@ -35,7 +35,6 @@ if __name__ == "__main__":
             break
 
         elif select_int == 1:
-
             print("Επιλέξτε αρχείο προβλήματος:")
             for index, path in enumerate(paths):
                 print(index, path)
